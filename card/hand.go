@@ -15,7 +15,7 @@ func (h *Hand) Add(card Card) {
 func (h *Hand) Score() int {
 	score := 0
 	for _, c := range h.Cards {
-		score += c.Point()
+		score += c.Score()
 	}
 	return score
 }
