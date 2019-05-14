@@ -3,6 +3,7 @@ package card
 import (
 	"errors"
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -23,6 +24,18 @@ func (c Card) String() string {
 		return "♥" + c.Rank
 	}
 	return ""
+}
+
+func (c Card) Point() int {
+	switch c.Rank {
+	case "A":
+		return 1
+	case "J", "Q", "K":
+		return 10
+	default:
+		p, _ := strconv.Atoi(c.Rank)
+		return p
+	}
 }
 
 type Deck struct {
