@@ -7,32 +7,32 @@ import (
 )
 
 type Card struct {
-	Suit string
-	Rank string
+	suit string
+	rank string
 }
 
 func (c Card) String() string {
-	switch c.Suit {
+	switch c.suit {
 	case "Spades":
-		return "♦" + c.Rank
+		return "♦" + c.rank
 	case "Diamonds":
-		return "♦" + c.Rank
+		return "♦" + c.rank
 	case "Clubs":
-		return "♣" + c.Rank
+		return "♣" + c.rank
 	case "Hearts":
-		return "♥" + c.Rank
+		return "♥" + c.rank
 	}
 	return ""
 }
 
 func (c Card) Score() int {
-	switch c.Rank {
+	switch c.rank {
 	case "A":
 		return 1
 	case "J", "Q", "K":
 		return 10
 	default:
-		p, _ := strconv.Atoi(c.Rank)
+		p, _ := strconv.Atoi(c.rank)
 		return p
 	}
 }

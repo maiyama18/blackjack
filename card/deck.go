@@ -3,27 +3,27 @@ package card
 import "errors"
 
 type Deck struct {
-	Cards []Card
+	cards []Card
 }
 
 func NewDeck() *Deck {
 	var cards []Card
 	for _, s := range []string{"Spades", "Diamonds", "Clubs", "Hearts"} {
 		for _, r := range []string{"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"} {
-			cards = append(cards, Card{Suit: s, Rank: r})
+			cards = append(cards, Card{suit: s, rank: r})
 		}
 	}
 
-	return &Deck{Cards: shuffle(cards)}
+	return &Deck{cards: shuffle(cards)}
 }
 
 func (d *Deck) Draw() (Card, error) {
-	if len(d.Cards) == 0 {
+	if len(d.cards) == 0 {
 		return Card{}, errors.New("deck is empty")
 	}
 
-	c := d.Cards[0]
-	d.Cards = d.Cards[1:]
+	c := d.cards[0]
+	d.cards = d.cards[1:]
 
 	return c, nil
 }

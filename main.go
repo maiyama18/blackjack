@@ -19,5 +19,4 @@ func main() {
 	fmt.Println(c2)
 	fmt.Println(c3)
 	fmt.Println(c4)
-	fmt.Println(len(deck.Cards))
 }
