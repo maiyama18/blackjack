@@ -1,20 +1,20 @@
 package card
 
 type Hand struct {
-	Cards []Card
+	cards []Card
 }
 
 func NewHand() *Hand {
-	return &Hand{Cards: []Card{}}
+	return &Hand{cards: []Card{}}
 }
 
 func (h *Hand) Add(card Card) {
-	h.Cards = append(h.Cards, card)
+	h.cards = append(h.cards, card)
 }
 
 func (h *Hand) Score() int {
 	score := 0
-	for _, c := range h.Cards {
+	for _, c := range h.cards {
 		score += c.Score()
 	}
 	return score
