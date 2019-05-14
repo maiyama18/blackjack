@@ -25,7 +25,7 @@ func (c Card) String() string {
 	return ""
 }
 
-func (c Card) Point() int {
+func (c Card) Score() int {
 	switch c.Rank {
 	case "A":
 		return 1
