@@ -17,7 +17,7 @@ func Run() {
 
 	dealerScore, burst := g.DealersTurn()
 	if burst {
-		fmt.Printf("You win due to burst of dealer with score: %d\n", g.dealer.hand.Score())
+		fmt.Printf("You win due to burst of dealer with score: %d\n", g.dealer.hand.BestScore())
 		return
 	}
 
@@ -41,7 +41,7 @@ func NewPlayer() *Player {
 }
 
 func (p *Player) doesDraw() bool {
-	fmt.Printf("Your score is %d. Draw more? (y/n): ", p.hand.Score())
+	fmt.Printf("Your score is %d. Draw more? (y/n): ", p.hand.BestScore())
 	for {
 		var answer string
 		_, err := fmt.Scanf("%s", &answer)
@@ -73,7 +73,7 @@ func NewDealer() *Dealer {
 }
 
 func (d *Dealer) doesDraw() bool {
-	return d.hand.Score() < 17
+	return d.hand.BestScore() < 17
 }
 
 type Game struct {
@@ -120,26 +120,26 @@ func (g *Game) PlayersTurn() (int, bool) {
 		g.player.hand.Add(c)
 		fmt.Printf("You draw: %s\n", c)
 		if g.player.hand.Burst() {
-			return g.player.hand.Score(), true
+			return g.player.hand.BestScore(), true
 		}
 	}
-	return g.player.hand.Score(), false
+	return g.player.hand.BestScore(), false
 }
 
 // DealersTurn make the dealer draw cards.
 func (g *Game) DealersTurn() (int, bool) {
 	c, _ := g.dealer.hand.LastCard()
 	fmt.Printf("Dealer's second card was: %s\n", c)
-	fmt.Printf("Dealer's score: %d\n", g.dealer.hand.Score())
+	fmt.Printf("Dealer's score: %d\n", g.dealer.hand.BestScore())
 
 	for g.dealer.doesDraw() {
 		c, _ := g.deck.Draw()
 		g.dealer.hand.Add(c)
 		fmt.Printf("Dealer draw: %s\n", c)
-		fmt.Printf("Dealer's score: %d\n", g.dealer.hand.Score())
+		fmt.Printf("Dealer's score: %d\n", g.dealer.hand.BestScore())
 		if g.dealer.hand.Burst() {
-			return g.dealer.hand.Score(), true
+			return g.dealer.hand.BestScore(), true
 		}
 	}
-	return g.dealer.hand.Score(), false
+	return g.dealer.hand.BestScore(), false
 }

@@ -14,16 +14,36 @@ func (h *Hand) Add(card Card) {
 	h.cards = append(h.cards, card)
 }
 
-func (h *Hand) Score() int {
-	score := 0
+func (h *Hand) Score() Score {
+	var score Score
 	for _, c := range h.cards {
-		score += c.Score()
+		score = score.Plus(c.Score())
 	}
 	return score
 }
 
+func (h *Hand) BestScore() int {
+	if len(h.Score()) == 0 {
+		return 0
+	}
+
+	var valids, bursts Score
+	for _, s := range h.Score() {
+		if s <= 21 {
+			valids = append(valids, s)
+		} else {
+			bursts = append(bursts, s)
+		}
+	}
+
+	if len(valids) == 0 {
+		return bursts.Min()
+	}
+	return valids.Max()
+}
+
 func (h *Hand) Burst() bool {
-	return h.Score() > 21
+	return h.BestScore() > 21
 }
 
 func (h *Hand) LastCard() (Card, error) {
