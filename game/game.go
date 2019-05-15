@@ -9,26 +9,24 @@ import (
 func Run() {
 	g := New()
 
-	g.PlayersTurn()
-	if g.player.hand.Burst() {
-		fmt.Printf("You lose with score: %d\n", g.player.hand.Score())
+	playerScore, burst := g.PlayersTurn()
+	if burst {
+		fmt.Printf("You lose due to burst with score: %d\n", playerScore)
 		return
 	}
 
-	g.DealersTurn()
-	if g.dealer.hand.Burst() {
-		fmt.Printf("You win. you: %d, dealer: %d\n", g.player.hand.Score(), g.dealer.hand.Score())
+	dealerScore, burst := g.DealersTurn()
+	if burst {
+		fmt.Printf("You win due to burst of dealer with score: %d\n", g.dealer.hand.Score())
 		return
 	}
 
-	ps := g.player.hand.Score()
-	ds := g.dealer.hand.Score()
-	if ps > ds {
-		fmt.Printf("You win. you: %d, dealer: %d\n", ps, ds)
-	} else if ps < ds {
-		fmt.Printf("You lose. you: %d, dealer: %d\n", ps, ds)
+	if playerScore > dealerScore {
+		fmt.Printf("You win. you: %d, dealer: %d\n", playerScore, dealerScore)
+	} else if playerScore < dealerScore {
+		fmt.Printf("You lose. you: %d, dealer: %d\n", playerScore, dealerScore)
 	} else {
-		fmt.Printf("Even. you: %d, dealer: %d\n", ps, ds)
+		fmt.Printf("Even. you: %d, dealer: %d\n", playerScore, dealerScore)
 	}
 }
 
@@ -116,19 +114,20 @@ func New() *Game {
 
 // PlayersTurn make the player draw cards.
 // This method ends when the player declare to stop to draw cards or the player's hand bursts.
-func (g *Game) PlayersTurn() {
+func (g *Game) PlayersTurn() (int, bool) {
 	for g.player.doesDraw() {
 		c, _ := g.deck.Draw()
 		g.player.hand.Add(c)
 		fmt.Printf("You draw: %s\n", c)
 		if g.player.hand.Burst() {
-			return
+			return g.player.hand.Score(), true
 		}
 	}
+	return g.player.hand.Score(), false
 }
 
 // DealersTurn make the dealer draw cards.
-func (g *Game) DealersTurn() {
+func (g *Game) DealersTurn() (int, bool) {
 	c, _ := g.dealer.hand.LastCard()
 	fmt.Printf("Dealer's second card was: %s\n", c)
 	fmt.Printf("Dealer's score: %d\n", g.dealer.hand.Score())
@@ -139,7 +138,8 @@ func (g *Game) DealersTurn() {
 		fmt.Printf("Dealer draw: %s\n", c)
 		fmt.Printf("Dealer's score: %d\n", g.dealer.hand.Score())
 		if g.dealer.hand.Burst() {
-			return
+			return g.dealer.hand.Score(), true
 		}
 	}
+	return g.dealer.hand.Score(), false
 }
