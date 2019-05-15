@@ -2,12 +2,16 @@ package game
 
 import (
 	"fmt"
+	"io"
+	"os"
+
+	"github.com/mui87/blackjack/log"
 
 	"github.com/mui87/blackjack/card"
 )
 
 func Run() {
-	g := New()
+	g := New(os.Stdout)
 
 	playerScore, burst := g.PlayersTurn()
 	if burst {
@@ -80,35 +84,41 @@ type Game struct {
 	deck   *card.Deck
 	player *Player
 	dealer *Dealer
+
+	logger *log.Logger
 }
 
-func New() *Game {
-	fmt.Println("game start")
-
+func New(out io.Writer) *Game {
 	deck := card.NewDeck()
 
 	player := NewPlayer()
 	dealer := NewDealer()
 
-	for i := 0; i < 2; i++ {
-		cp, _ := deck.Draw()
-		cd, _ := deck.Draw()
-
-		fmt.Printf("You draw: %s\n", cp)
-		player.hand.Add(cp)
-
-		if i == 0 {
-			fmt.Printf("Dealer draw: %s\n", cd)
-		} else {
-			fmt.Print("Dealer draw: ?\n")
-		}
-		dealer.hand.Add(cd)
-	}
+	logger := log.NewLogger(out)
 
 	return &Game{
 		deck:   deck,
 		player: player,
 		dealer: dealer,
+		logger: logger,
+	}
+}
+
+func (g *Game) Init() {
+	for i := 0; i < 2; i++ {
+		cp, _ := g.deck.Draw()
+
+		g.logger.Draw("you", cp, false)
+		g.player.hand.Add(cp)
+
+		cd, _ := g.deck.Draw()
+
+		secret := false
+		if i == 1 {
+			secret = true
+		}
+		g.logger.Draw("dealer", cd, secret)
+		g.dealer.hand.Add(cd)
 	}
 }
 
@@ -118,7 +128,7 @@ func (g *Game) PlayersTurn() (int, bool) {
 	for g.player.doesDraw() {
 		c, _ := g.deck.Draw()
 		g.player.hand.Add(c)
-		fmt.Printf("You draw: %s\n", c)
+		g.logger.Draw("you", c, false)
 		if g.player.hand.Burst() {
 			return g.player.hand.BestScore(), true
 		}
