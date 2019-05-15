@@ -1,5 +1,7 @@
 package card
 
+import "errors"
+
 type Hand struct {
 	cards []Card
 }
@@ -18,4 +20,15 @@ func (h *Hand) Score() int {
 		score += c.Score()
 	}
 	return score
+}
+
+func (h *Hand) Burst() bool {
+	return h.Score() > 21
+}
+
+func (h *Hand) LastCard() (Card, error) {
+	if len(h.cards) == 0 {
+		return Card{}, errors.New("card never drawn")
+	}
+	return h.cards[len(h.cards)-1], nil
 }
