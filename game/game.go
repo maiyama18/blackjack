@@ -40,18 +40,6 @@ func Run() {
 	}
 }
 
-type Player struct {
-	name string
-	hand *card.Hand
-}
-
-func NewPlayer(name string) *Player {
-	return &Player{
-		name: name,
-		hand: card.NewHand(),
-	}
-}
-
 type Game struct {
 	deck   *card.Deck
 	player *Player
