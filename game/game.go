@@ -17,45 +17,37 @@ func Run() {
 
 	playerScore, burst := g.PlayersTurn()
 	if burst {
-		g.logger.Burst("you", playerScore)
-		g.logger.Logf("%s LOSE\n", "you")
+		g.logger.Burst(g.player.name, playerScore)
+		g.logger.Logf("%s LOSE\n", g.player.name)
 		return
 	}
 
 	dealerScore, burst := g.DealersTurn()
 	if burst {
 		g.logger.Burst("dealer", dealerScore)
-		g.logger.Logf("%s WIN\n", "you")
+		g.logger.Logf("%s WIN\n", g.player.name)
 		return
 	}
 
-	g.logger.Scores("you", "dealer", playerScore, dealerScore)
+	g.logger.Scores(g.player.name, g.dealer.name, playerScore, dealerScore)
 
 	if playerScore > dealerScore {
-		g.logger.Logf("%s WIN\n", "you")
+		g.logger.Logf("%s WIN\n", g.player.name)
 	} else if playerScore < dealerScore {
-		g.logger.Logf("%s LOSE\n", "you")
+		g.logger.Logf("%s LOSE\n", g.player.name)
 	} else {
 		g.logger.Logf("EVEN\n")
 	}
 }
 
 type Player struct {
+	name string
 	hand *card.Hand
 }
 
-func NewPlayer() *Player {
+func NewPlayer(name string) *Player {
 	return &Player{
-		hand: card.NewHand(),
-	}
-}
-
-type Dealer struct {
-	hand *card.Hand
-}
-
-func NewDealer() *Dealer {
-	return &Dealer{
+		name: name,
 		hand: card.NewHand(),
 	}
 }
@@ -63,7 +55,7 @@ func NewDealer() *Dealer {
 type Game struct {
 	deck   *card.Deck
 	player *Player
-	dealer *Dealer
+	dealer *Player
 
 	logger *log.Logger
 }
@@ -71,8 +63,8 @@ type Game struct {
 func New(out io.Writer) *Game {
 	deck := card.NewDeck()
 
-	player := NewPlayer()
-	dealer := NewDealer()
+	player := NewPlayer("you")
+	dealer := NewPlayer("dealer")
 
 	logger := log.NewLogger(out)
 
@@ -88,7 +80,7 @@ func (g *Game) Init() {
 	for i := 0; i < 2; i++ {
 		cp, _ := g.deck.Draw()
 
-		g.logger.Draw("you", cp, false)
+		g.logger.Draw(g.player.name, cp, false)
 		g.player.hand.Add(cp)
 
 		cd, _ := g.deck.Draw()
@@ -97,7 +89,7 @@ func (g *Game) Init() {
 		if i == 1 {
 			secret = true
 		}
-		g.logger.Draw("dealer", cd, secret)
+		g.logger.Draw(g.dealer.name, cd, secret)
 		g.dealer.hand.Add(cd)
 	}
 }
@@ -105,13 +97,13 @@ func (g *Game) Init() {
 // PlayersTurn make the player draw cards.
 // This method ends when the player declare to stop to draw cards or the player's hand bursts.
 func (g *Game) PlayersTurn() (int, bool) {
-	g.logger.Hand("you", g.player.hand)
+	g.logger.Hand(g.player.name, g.player.hand)
 	for g.doesPlayerDraw() {
 		c, _ := g.deck.Draw()
-		g.logger.Draw("you", c, false)
+		g.logger.Draw(g.player.name, c, false)
 
 		g.player.hand.Add(c)
-		g.logger.Hand("you", g.player.hand)
+		g.logger.Hand(g.player.name, g.player.hand)
 
 		if g.player.hand.Burst() {
 			return g.player.hand.BestScore(), true
@@ -126,8 +118,8 @@ func (g *Game) DealersTurn() (int, bool) {
 		c, _ := g.deck.Draw()
 		g.dealer.hand.Add(c)
 
-		g.logger.Draw("dealer", c, false)
-		g.logger.Hand("dealer", g.dealer.hand)
+		g.logger.Draw(g.dealer.name, c, false)
+		g.logger.Hand(g.dealer.name, g.dealer.hand)
 
 		if g.dealer.hand.Burst() {
 			return g.dealer.hand.BestScore(), true
