@@ -1,6 +1,9 @@
 package card
 
-import "errors"
+import (
+	"fmt"
+	"strings"
+)
 
 type Hand struct {
 	cards []Card
@@ -8,6 +11,15 @@ type Hand struct {
 
 func NewHand() *Hand {
 	return &Hand{cards: []Card{}}
+}
+
+func (h *Hand) String() string {
+	var cardStrs []string
+	for _, c := range h.cards {
+		cardStrs = append(cardStrs, c.String())
+	}
+
+	return fmt.Sprintf("{%s}", strings.Join(cardStrs, ", "))
 }
 
 func (h *Hand) Add(card Card) {
@@ -44,11 +56,4 @@ func (h *Hand) BestScore() int {
 
 func (h *Hand) Burst() bool {
 	return h.BestScore() > 21
-}
-
-func (h *Hand) LastCard() (Card, error) {
-	if len(h.cards) == 0 {
-		return Card{}, errors.New("card never drawn")
-	}
-	return h.cards[len(h.cards)-1], nil
 }
