@@ -118,3 +118,70 @@ func testScoreEqual(t *testing.T, want, got Score) {
 		}
 	}
 }
+
+func TestCard_String(t *testing.T) {
+	tests := []struct {
+		name string
+		card Card
+		want string
+	}{
+		{
+			name: "Spades_A",
+			card: Card{suit: "Spades", rank: "A"},
+			want: "♠A",
+		},
+		{
+			name: "Diamonds_7",
+			card: Card{suit: "Diamonds", rank: "7"},
+			want: "♦7",
+		},
+		{
+			name: "Hearts_10",
+			card: Card{suit: "Hearts", rank: "10"},
+			want: "♥10",
+		},
+		{
+			name: "Clubs_K",
+			card: Card{suit: "Clubs", rank: "K"},
+			want: "♣K",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			got := test.card.String()
+			if got != test.want {
+				t.Fatalf("card string wrong. want=%s, got=%s", test.want, got)
+			}
+		})
+	}
+}
+
+func TestCard_Score(t *testing.T) {
+	tests := []struct {
+		name string
+		card Card
+		want Score
+	}{
+		{
+			name: "A",
+			card: Card{suit: "Spades", rank: "A"},
+			want: Score([]int{1, 11}),
+		},
+		{
+			name: "Q",
+			card: Card{suit: "Spades", rank: "Q"},
+			want: Score([]int{10}),
+		},
+		{
+			name: "7",
+			card: Card{suit: "Spades", rank: "7"},
+			want: Score([]int{7}),
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			got := test.card.Score()
+			testScoreEqual(t, test.want, got)
+		})
+	}
+}

@@ -64,9 +64,10 @@ type Card struct {
 }
 
 func (c Card) String() string {
+	// https://blog.pokercopilot.com/2017/01/how-to-use-card-suit-symbols-%E2%99%A5%E2%99%A6%E2%99%A0%E2%99%A3-on-your-computer
 	switch c.suit {
 	case "Spades":
-		return "♦" + c.rank
+		return "♠" + c.rank
 	case "Diamonds":
 		return "♦" + c.rank
 	case "Clubs":
